@@ -21,7 +21,7 @@ class Cell:
                 if temp!=index and temp not in self.relations:
                     self.relations.append(temp)
         if value == ".":
-            self.domain = [1,2,3,4,5,6,7,8,9]
+            self.domain = ["1","2","3","4","5","6","7","8","9"]
         else:
             self.domain = [value]
             
