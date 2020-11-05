@@ -37,7 +37,7 @@ class Constraint:
     def __init__(self,cellA,cellB):
         self.current = cellA
         self.other = cellB
-    def arc_consist():
+    def arc_consist(self):
         return self.current.constrain(self.other)
 
 temp = Cell("A1",".")
