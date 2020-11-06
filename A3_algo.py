@@ -1,7 +1,7 @@
 import math
 import random
-import queue
-from Cell import Cell
+from queue import Queue
+from Cell import Cell, Constraint
 
 #Define Global Variables
 FILENAME = "soduku.txt"
@@ -109,15 +109,37 @@ def printBoard(board):
             col += 2
 
 
-# A3 Algorithm
-def a3Algorithm(board ,csp):
+# AC3 Algorithm
+def ac3Algorithm(board, csp, arcs):
     
-    return
+    while len(csp) > 0:
+        vals = csp.pop(0)
+
+        val1 = board[vals[0]]
+        val2 = board[vals[1]]
+
+        temp = val1.domain.copy()
+        const = Constraint(val1, val2)
+        const.arc_consist()
+
+        if (val1.domain != temp):
+            for i in range(len(arcs)):
+                if arcs[i][1] == vals[0] and (arcs[i] not in csp):
+                    csp.append(arcs[i])
+        
+    return board, csp
 
 # Gets the all ARCs for soduku puzzle
-def generateCSP():
+def generateCSP(board):
+    csp = []
+    arcs = []
+    for start, val in board.items():
+        for i in range(len(val.relations)):
+            csp.append((start, val.relations[i]))
+            arcs.append((start, val.relations[i]))
+            
     
-    return
+    return csp, arcs
 
 # This defines the actual board with all possible values where the periods are 
 def generate_A3_board(puzzle):
@@ -134,6 +156,15 @@ def generate_A3_board(puzzle):
                 board[ind] = cell
     return board
 
+# This is purely a testing function. Has no real use in the actual program
+# This is used to test what spaces have multiple values left over
+def test_domain(board):
+    for i,j in board.items():
+        if len(j.domain) > 1:
+            print(i, j.domain)
+    
+    return
+
 
 # EACH PUZZLE MUST BE FOLLOWED WITH AN EMPTY LINE AFTERWARDS
 def main():
@@ -144,7 +175,10 @@ def main():
             print("Original Puzzle")
             printPuzzle(puzzle)
             board = generate_A3_board(puzzle)
-            print("Test board Puzzle")
+            csp, arcs = generateCSP(board)
+            board, csp = ac3Algorithm(board, csp, arcs)
+            #test_domain(board)
+            print("After AC3 Algorithm Puzzle")
             printBoard(board)
             print()
 

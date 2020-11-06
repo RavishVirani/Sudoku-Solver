@@ -21,15 +21,16 @@ class Cell:
                 if temp!=index and temp not in self.relations:
                     self.relations.append(temp)
         if value == ".":
-            self.domain = ["1","2","3","4","5","6","7","8","9"]
+            self.domain = ['1','2','3','4','5','6','7','8','9']
         else:
             self.domain = [value]
             
     def constrain(self,other):
-        if len(self.domain)==1:
-            if self.domain[0] in other.domain:
-                other.domain.remove(self.domain[0])
+        if len(other.domain)==1:
+            if other.domain[0] in self.domain:
+                self.domain.remove(other.domain[0])
                 return True
+            
         return True
         
         
@@ -40,5 +41,10 @@ class Constraint:
     def arc_consist(self):
         return self.current.constrain(self.other)
 
-temp = Cell("A1",".")
-temp = Cell("I9",".")
+temp = Cell("A1","2")
+temp1 = Cell("I9",".")
+
+
+
+#print(temp.relations)
+#print(temp.domain)
