@@ -178,6 +178,7 @@ def main():
             csp, arcs = generateCSP(board)
             board, csp = ac3Algorithm(board, csp, arcs)
             #test_domain(board)
+            #assignment = backtracking_search(csp, board)
             print("After AC3 Algorithm Puzzle")
             printBoard(board)
             print()
