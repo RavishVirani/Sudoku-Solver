@@ -15,25 +15,25 @@ def backtrack(assignment,csp, board):
         return assignment
     
     #selects unassigned variable
-    var = select_unassigned_variable(csp)
+    var = select_unassigned_variable(assignment, csp, board)
     
     
     for value in order_domain_values(var,assignment,csp, board):
         
         
-        if is_consistent(value,assignment):
+        if is_consistent(value,assignment, board):
             
             #add {cell = value} to assignment
             assignment[var] = value
             
             #forward checking
-            inferences = inference(csp,var,value)
+            inferences = inference(csp,var,value,assignment,board)
             
             
             if inferences != []:
                 for i in inferences:
                     assignment.add(i)
-                result = backtrack(assignment, csp)
+                result = backtrack(assignment, csp, board)
                 
                 if result != -1:
                     return result
@@ -66,7 +66,7 @@ def order_domain_values(var, assignment, csp, board):
     if len(board[var].domain) == 1:
         return board[var]
     
-    criteria = lambda value: numConflict(csp,var,value)
+    criteria = lambda value: numConflict(csp,var,value, board)
     return sorted(board[var].domain, key=criteria)
     
 
