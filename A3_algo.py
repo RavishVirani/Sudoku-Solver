@@ -128,8 +128,7 @@ def ac3Algorithm(board, csp, arcs):
             for i in range(len(arcs)):
                 if arcs[i][1] == vals[0] and (arcs[i] not in csp):
                     csp.append(arcs[i])
-
-    # print(len(csp))        
+        print(len(csp))
     return board, csp
 
 # Gets the all ARCs for soduku puzzle
@@ -171,13 +170,10 @@ def test_domain(board):
 
 # EACH PUZZLE MUST BE FOLLOWED WITH AN EMPTY LINE AFTERWARDS
 def main():
-    num = 0
+    invalid = False
     fh = open(FILENAME, "r")
     for i in fh:
-        num = num + 1
-        invalid = False
         if i != "\n":
-            print("(PUZZLE " + str(num) + ")")
             puzzle = getPuzzle(i)
             print("Original Puzzle")
             printPuzzle(puzzle)
@@ -188,22 +184,20 @@ def main():
             board, csp = ac3Algorithm(board, csp, arcs)
 
             if (board == None and csp == None):
-                print("Invalid Puzzle!!!")
+                print("Invalid Puzzle")
                 invalid = True
 
             if not invalid:
                 val = test_domain(board)
-
                 if val == False:
                     print("AC3 couldn't solve the puzzle")
-                    backtracking_search(csp, board)
-
-                    print("After Backtracking Algorithm Puzzle")
-                    printBoard(board)
                 else:
-                    print("AC3 solved the puzzle!!!")
-                    print("After AC3 Algorithm Puzzle")
-                    printBoard(board)
+                    print("AC3 solved the puzzle")
+                print()
+                #assignment = backtracking_search(csp, board)
+                print(assignment)
+                print("After AC3 Algorithm Puzzle")
+                printBoard(board)
             print()
 
 main()
