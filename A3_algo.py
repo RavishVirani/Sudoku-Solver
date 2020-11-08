@@ -2,6 +2,7 @@ import math
 import random
 from queue import Queue
 from Cell import Cell, Constraint
+from backtrack import *
 
 #Define Global Variables
 FILENAME = "soduku.txt"
@@ -121,7 +122,8 @@ def ac3Algorithm(board, csp, arcs):
         temp = val1.domain.copy()
         const = Constraint(val1, val2)
         const.arc_consist()
-
+        if len(val2.domain) == 0:
+            return None, None 
         if (val1.domain != temp):
             for i in range(len(arcs)):
                 if arcs[i][1] == vals[0] and (arcs[i] not in csp):
@@ -161,26 +163,40 @@ def generate_A3_board(puzzle):
 def test_domain(board):
     for i,j in board.items():
         if len(j.domain) > 1:
-            print(i, j.domain)
+            return False
     
-    return
+    return True
 
 
 # EACH PUZZLE MUST BE FOLLOWED WITH AN EMPTY LINE AFTERWARDS
 def main():
+    invalid = False
     fh = open(FILENAME, "r")
     for i in fh:
         if i != "\n":
             puzzle = getPuzzle(i)
             print("Original Puzzle")
             printPuzzle(puzzle)
+            print()
+
             board = generate_A3_board(puzzle)
             csp, arcs = generateCSP(board)
             board, csp = ac3Algorithm(board, csp, arcs)
-            #test_domain(board)
-            #assignment = backtracking_search(csp, board)
-            print("After AC3 Algorithm Puzzle")
-            printBoard(board)
+
+            if (board == None and csp == None):
+                print("Invalid Puzzle")
+                invalid = True
+
+            if not invalid:
+                val = test_domain(board)
+                if val == False:
+                    print("AC3 couldn't solve the puzzle")
+                else:
+                    print("AC3 solved the puzzle")
+                print()
+                #assignment = backtracking_search(csp, board)
+                print("After AC3 Algorithm Puzzle")
+                printBoard(board)
             print()
 
 main()
