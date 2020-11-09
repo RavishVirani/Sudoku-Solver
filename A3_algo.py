@@ -112,7 +112,9 @@ def printBoard(board):
 
 # AC3 Algorithm
 def ac3Algorithm(board, csp, arcs):
-    
+    lenOfQ = []
+    lenOfQ.append(len(csp))
+
     while len(csp) > 0:
         vals = csp.pop(0)
 
@@ -128,7 +130,19 @@ def ac3Algorithm(board, csp, arcs):
             for i in range(len(arcs)):
                 if arcs[i][1] == vals[0] and (arcs[i] not in csp):
                     csp.append(arcs[i])
-        print(len(csp))
+        lenOfQ.append(len(csp))
+
+    lenToStr = ''
+    for i in range(len(lenOfQ)):
+        if (i != len(lenOfQ) - 1):
+            lenToStr = lenToStr + str(lenOfQ[i]) + ' -> '
+        else:
+            lenToStr = lenToStr + str(lenOfQ[i])
+
+    print('Length of Queue at each steps: ')
+    print(lenToStr)
+    print()
+
     return board, csp
 
 # Gets the all ARCs for soduku puzzle
@@ -170,10 +184,13 @@ def test_domain(board):
 
 # EACH PUZZLE MUST BE FOLLOWED WITH AN EMPTY LINE AFTERWARDS
 def main():
-    invalid = False
+    num = 0
     fh = open(FILENAME, "r")
     for i in fh:
+        num = num + 1
+        invalid = False
         if i != "\n":
+            print("(PUZZLE " + str(num) + ")")
             puzzle = getPuzzle(i)
             print("Original Puzzle")
             printPuzzle(puzzle)
@@ -184,21 +201,23 @@ def main():
             board, csp = ac3Algorithm(board, csp, arcs)
 
             if (board == None and csp == None):
-                print("Invalid Puzzle")
+                print("Invalid Puzzle!!!")
                 invalid = True
 
             if not invalid:
                 val = test_domain(board)
                 if val == False:
                     print("AC3 couldn't solve the puzzle")
+                    print("After AC3 Algorithm Puzzle")
                     printBoard(board)
                     assignment = backtracking_search(board)
                     print("After the Backtracking Algorithm")                                        
                     printBoard(assignment)
                 else:
-                    print("AC3 solved the puzzle")
-                    print()
+                    print("AC3 solved the puzzle!!!")
+                    print("After AC3 Algorithm Puzzle")
                     printBoard(board)
+            print()
             print()
 
 main()
