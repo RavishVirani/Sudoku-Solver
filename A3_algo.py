@@ -191,13 +191,14 @@ def main():
                 val = test_domain(board)
                 if val == False:
                     print("AC3 couldn't solve the puzzle")
+                    printBoard(board)
+                    #assignment = backtracking_search(csp, board)
+                    print("After the Backtracking Algorithm")                                        
+                    print(assignment)
                 else:
                     print("AC3 solved the puzzle")
-                print()
-                #assignment = backtracking_search(csp, board)
-                print(assignment)
-                print("After AC3 Algorithm Puzzle")
-                printBoard(board)
+                    print()
+                    printBoard(board)
             print()
 
 main()
