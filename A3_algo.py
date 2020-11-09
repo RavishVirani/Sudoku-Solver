@@ -192,9 +192,9 @@ def main():
                 if val == False:
                     print("AC3 couldn't solve the puzzle")
                     printBoard(board)
-                    #assignment = backtracking_search(csp, board)
+                    assignment = backtracking_search(board)
                     print("After the Backtracking Algorithm")                                        
-                    print(assignment)
+                    printBoard(assignment)
                 else:
                     print("AC3 solved the puzzle")
                     print()
