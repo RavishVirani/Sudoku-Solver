@@ -1,113 +1,143 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Fri Nov  6 18:33:14 2020
+from Cell import Cell
+from copy import deepcopy
 
-@author: Karan Grewal
-"""
 
-def backtracking_search(csp, board):
-    return backtrack({},csp, board)
+def backtracking_search(board):
+    unassigned = {}
+    indices = []
+    tried ={}
+    
+    #Put all the remaining cells in the CSP into these structures    
+    for i,j in board.items():
+        if len(j.domain)>1:
+            unassigned[i] = Cell(i,".")
+            unassigned[i].domain = j.domain.copy()
+            indices.append(i)
+            tried[i]=[]
+    for i,j in unassigned.items():
+        unassigned[i].relations = remove_relations(unassigned[i].relations,indices)
 
-def backtrack(assignment,csp, board):
+
+    order = []
+    i = 0
+    other_dict = deepcopy(unassigned)
+    temp = {key:val for key,val in sorted(other_dict.items(),key = sorting_key)}
     
-    #check if assignemnt is complete
-    if len(assignment) == len(csp):
-        return assignment
-    
-    #selects unassigned variable
-    var = select_unassigned_variable(assignment, csp, board)
-    
-    
-    for value in order_domain_values(var,assignment,csp, board):
+    #Backtrack search for a valid solution.
+    #Uses the Minimum Remaining Values, Degree, and the Least Constraining Value heuristics
+    while i>=0 and i<len(indices):
+        #Check the best variable to choose
+        first_key = next(iter(temp))
+        first_value = best_value(first_key,temp)
+
+        #If there are no valid domain values
+        if first_value==0:
+            if len(order)==0:
+                print("Impossible Puzzle")
+                return
+
+            #Backtrack one cell and variable pair
+            old_key,old_value = order.pop()
+
+            #Reset the current tried values and add the backtracked value into the tried values
+            tried[first_key] = []
+            tried[old_key].append(old_value)
+
+            #Add the backtracked index back into the CSP and reset the domain of the current variable
+            temp = add_pair(old_key,old_value,temp,unassigned,order,tried)
+            temp[first_key].domain = restore_domain(first_key,order,unassigned)            
+            i-=1
+        else:
+            #Add the current best value and cell pair into the history, remove the value from affected cells and remove the chosen cell from the CSP
+            order.append([first_key,first_value])
+            temp = remove_pair(first_key,first_value,temp)
+            del temp[first_key]
+            i+=1
+        #Sort the remaining values to find the next best value to choose
+        temp = {key:val for key,val in sorted(temp.items(),key = sorting_key)}
         
+    #Set the variables chosen from backtracking to the main board
+    for i,j in order:
+        board[i].domain = [j]
         
-        if is_consistent(value,assignment, board):
-            
-            #add {cell = value} to assignment
-            assignment[var] = value
-            
-            #forward checking
-            inferences = inference(csp,var,value,assignment,board)
-            
-            
-            if inferences != []:
-                for i in inferences:
-                    assignment.add(i)
-                result = backtrack(assignment, csp, board)
-                
-                if result != -1:
-                    return result
-        assignment.remove(value)
-        for k in inferences:
-            assignment.remove(k)
-    return -1
+    return board
 
-#selects an unsassigned variable
-def select_unassigned_variable(assignment, csp, board):
-    unassigned = []
-    
-    # for each cell
-    for cell in csp:
-        
-        #if it is not assinged
-        if cell not in assignment:
-            
-            #add to unassigned list
-            unassigned.append(cell)
-            
-    #uses MCV heuristic to find next best unassigned variable
-    criteria = lambda cell: len(board[cell].domain)
-    
-    return min(unassigned, key=criteria)
+def smallest_domain(cell):
+    return len(cell.domain)
 
+def most_constraints(cell):
+    return -len(cell.relations)
 
-#function to find LCV
-def order_domain_values(var, assignment, csp, board):
-    if len(board[var].domain) == 1:
-        return board[var]
-    
-    criteria = lambda value: numConflict(csp,var,value, board)
-    return sorted(board[var].domain, key=criteria)
-    
+def sorting_key(item):
+    return (smallest_domain(item[1]),most_constraints(item[1]))
 
-#counts number of conflicts and returns count
-def numConflict(csp,var,value, board):
-    count=0
-    
-    for relate in board[var].relatations:
-        if len(board[relate].domain) > 1 and value in board[relate].relations:
-            count += 1
+def remove_relations(relations,unassigned):
+    return [index for index in relations if index in unassigned]
+
+def best_value(cell,unassigned):
+    count = -1
+    best = 0
+    for value in unassigned[cell].domain:
+        temp = count_constraints(cell,value,unassigned)
+        if count==-1 or temp<count:
+            best = value
+    return best
+
+def count_constraints(cell,value,unassigned):
+    count = 0
+    for related in unassigned[cell].relations:
+        if value in unassigned[related].domain:
+            count+=1
     return count
 
-
-#check to see if consistent
-def is_consistent(value,assignment, board):
-    is_consistent = True
+def remove_pair(index,value,temp):
+    for i,j in temp.items():
+        if index in j.relations:
+            j.relations.remove(index)
+            if value in j.domain:
+                j.domain.remove(value)
+    return temp
     
-    for current_cell, current_value in board.items():
-        
-        #if values are same and cells are related, function no longer consistent
-        if current_value == value and current_cell in board[current_cell].relations:
-            is_consistent = False
-    return is_consistent
+def add_pair(index,value,temp,unassigned,order,tried):
+    domain_want = []
+    for i,j in temp.items():
+        if index in unassigned[i].relations:
+            j.relations.append(index)
+            if value in unassigned[i].domain:
+                domain_want.append(i)
+
+    #restore the value to the cells that should have it if index was the only one constraining it
+    for wanting in domain_want:
+        give = True
+        for history in order:
+            if history[0] in unassigned[wanting].relations:
+                if history[1]==value:
+                    give = False
+                    break
+        if give:
+            temp[wanting].domain.append(value)
 
 
-#forward check to reduce domain if possible
-def inference(csp,var, value, assignment, board):
+    #restore the index back into the unassigned dictionary
+    temp[index] = Cell(index,".")
+    temp[index].domain = [val for val in unassigned[index].domain]
     
-    inferences = []
-    #for each related cell of var
-    for relatedc in csp[var]:
-        
-        #if this cell is not in assignment
-        if relatedc not in assignment:
-            
-            #and if this value remains possible
-            if value in board[relatedc].domain:
+    for history in order:
+        if history[0] in temp[index].relations:
+            if history[1] in temp[index].domain:
+                temp[index].domain.remove(history[1])
                 
-                #add to list of inferences
-                inferences.append(value)
-                #remove it from possibilities
-                board[relatedc].domain.remove(value)
-                
-    return inferences
+    for already in tried[index]:
+        if already in temp[index].domain:
+            temp[index].domain.remove(already)
+    temp[index].relations = [relate for relate in unassigned[index].relations if relate in temp.keys()]
+    return temp
+    
+def restore_domain(index,order,unassigned):
+    temp = [val for val in unassigned[index].domain]
+    for history in order:
+        if history[0] in unassigned[index].relations:
+            if history[1] in temp:
+                temp.remove(history[1])
+    return temp
+    
