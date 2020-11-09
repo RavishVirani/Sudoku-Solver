@@ -125,7 +125,9 @@ def ac3Algorithm(board, csp, arcs):
         const = Constraint(val1, val2)
         const.arc_consist()
         if len(val2.domain) == 0:
-            return None, None 
+            board=None
+            csp=None
+            break
         if (val1.domain != temp):
             for i in range(len(arcs)):
                 if arcs[i][1] == vals[0] and (arcs[i] not in csp):
