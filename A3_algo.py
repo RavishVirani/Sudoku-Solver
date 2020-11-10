@@ -4,8 +4,15 @@ from queue import Queue
 from Cell import Cell, Constraint
 from backtrack import *
 
+
+"""
+CHANGE ME
+"""
+FILENAME = "sudoku.txt"
+
+
+
 #Define Global Variables
-FILENAME = "soduku.txt"
 DEFAULT = [1,2,3,4,5,6,7,8,9]
 ROWXCOL = 9
 ALPHA = "ABCDEFGHI"
