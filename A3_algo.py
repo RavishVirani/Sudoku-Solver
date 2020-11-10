@@ -189,9 +189,9 @@ def main():
     num = 0
     fh = open(FILENAME, "r")
     for i in fh:
-        num = num + 1
         invalid = False
         if i != "\n":
+            num = num + 1
             print("(PUZZLE " + str(num) + ")")
             puzzle = getPuzzle(i)
             print("Original Puzzle")
@@ -210,9 +210,11 @@ def main():
                 val = test_domain(board)
                 if val == False:
                     print("AC3 couldn't solve the puzzle")
+                    print()
                     print("After AC3 Algorithm Puzzle")
                     printBoard(board)
                     assignment = backtracking_search(board)
+                    print()
                     print("After the Backtracking Algorithm")                                        
                     printBoard(assignment)
                 else:
