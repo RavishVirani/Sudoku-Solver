@@ -218,15 +218,17 @@ def main():
                 if val == False:
                     print("AC3 couldn't solve the puzzle")
                     print()
-                    print("After AC3 Algorithm Puzzle")
+                    print("After the AC3 Algorithm")
                     printBoard(board)
-                    assignment = backtracking_search(board)
                     print()
                     print("After the Backtracking Algorithm")                                        
-                    printBoard(assignment)
+                    assignment = backtracking_search(board)
+                    if assignment != None:
+                        printBoard(assignment)
                 else:
                     print("AC3 solved the puzzle!!!")
-                    print("After AC3 Algorithm Puzzle")
+                    print()
+                    print("After the AC3 Algorithm")
                     printBoard(board)
             print()
             print()

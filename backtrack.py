@@ -33,7 +33,7 @@ def backtracking_search(board):
         #If there are no valid domain values
         if first_value==0:
             if len(order)==0:
-                print("Impossible Puzzle")
+                print("Invalid Puzzle!!!")
                 return
 
             #Backtrack one cell and variable pair
