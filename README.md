@@ -35,4 +35,4 @@ A note about inputs. Must have 81 characters on a line and the file MUST end wit
 ![](Screenshot/Output1.png)
 <br/>
 <br/>
-![](Screenshot/Output2.png)
+![](Screenshot/output2.png)
